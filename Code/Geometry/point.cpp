@@ -12,8 +12,8 @@ struct point{
 	point operator-(const point &o) const{ return {x - o.x, y - o.y}; }
 	point operator*(T k) const{ return {x*k, y*k}; }
 	point operator/(T k) const{ return {x/k, y/k}; }
-	T operator*(const point &o) const{ return x*o.x + y*o.y; }
-	T operator^(const point &o) const{ return x*o.y - y*o.x; }
+	T operator*(const point &o) const{ return x*o.x + y*o.y; } //dot product
+	T operator^(const point &o) const{ return x*o.y - y*o.x; } //cross product
 	bool operator<(const point &o) const{ return (eq(x, o.x) ? y < o.y : x < o.x); }
 	bool operator==(const point &o) const{ return eq(x, o.x) and eq(y, o.y); }
 	
