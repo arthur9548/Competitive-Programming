@@ -24,7 +24,7 @@ void dfs(int v, int p, int oid){
 		else{
 			if (adj==p)continue;
 			if (depth[adj]>=depth[v])continue;
-			low[v] = min(low[v], tin[adj]);
+			low[v] = min(low[v], tin[adj]); //is backedge
 		}
 	}
 	if (low[v]==tin[v] and v!=p)bridge[oid] = true;
