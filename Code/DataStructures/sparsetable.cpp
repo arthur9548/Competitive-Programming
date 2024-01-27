@@ -26,6 +26,6 @@ struct SpTable{
 		int k = lg(r-l+1);
 		return spop(table[k][l], table[k][r+1-(1ll<<k)]);
 	}
-}
+};
 	
 	
