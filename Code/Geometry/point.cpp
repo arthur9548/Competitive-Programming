@@ -1,4 +1,4 @@
-// Point/vector structure definition and sorting
+// Point/vector structure definition
 
 #define T int
 float EPS = 1e-6;
