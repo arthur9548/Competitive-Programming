@@ -2,7 +2,7 @@
 
 float polarea(vector<point> pol){
 	float res = 0; pol.pb(pol[0]);
-	rep(i, 0, n)res += pol[i]^pol[i+1];
+	rep(i, 0, pol.size())res += pol[i]^pol[i+1];
 	return abs(res)/2.0;
 }
 
