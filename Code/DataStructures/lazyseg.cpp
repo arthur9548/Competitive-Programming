@@ -3,10 +3,11 @@
 //customizable operations, but prop should be analyzed separately
 
 #define type int
-#define neutral (-(2e15))
+#define neutral 0ll
+//neutral is for query, not lazy update
 
 type merge(type a, type b){
-	return max(a, b);
+	return a+b;
 }
 
 int parent(int pos){
@@ -28,6 +29,8 @@ struct LazySegTree{
 	}
 	
 	void prop(int pos, int lx, int rx){
+		//careful on how lazy is implemented according to operations
+		//strongly connected to how update works
 		if (lazy[pos]==0ll)return;
 		seg[pos] += lazy[pos];
 		if ((rx-lx)>1){
@@ -35,6 +38,15 @@ struct LazySegTree{
 			lazy[2*pos+2]+=lazy[pos];
 		}
 		lazy[pos] = 0ll;
+	}
+	
+	//Interface
+	void update(int l, int r, int value){
+		updt(l,r+1,value,0,0,n);
+	}
+	
+	type query(int l, int r){
+		return qry(l,r+1,0,0,n);
 	}
 	
 	//[l,r[
@@ -56,13 +68,5 @@ struct LazySegTree{
 		if (l <= lx and r >= rx)return seg[pos];
 		int mid = lx+(rx-lx)/2;
 		return merge(qry(l,r,2*pos+1,lx,mid), qry(l,r,2*pos+2,mid,rx));
-	}
-	
-	void update(int l, int r, int value){
-		updt(l,r+1,value,0,0,n);
-	}
-	
-	type query(int l, int r){
-		return qry(l,r+1,0,0,n);
 	}
 };
