@@ -1,5 +1,9 @@
+//Sparse Table: RMQ in O(nlogn) build, O(1) query
+//Customizable type and operations
+
 int lg(int x){
 	return __builtin_clzll(1ll) - __builtin_clzll((long long)x);
+	// log2(x) in O(1)
 }
 
 #define type int
@@ -7,7 +11,7 @@ int lg(int x){
 
 struct SpTable{
 	int n, logn;
-	vector<type> values;
+	vector<type> values; //original values, not needed besides constructor
 	vector<vector<type>> table;
 	
 	SpTable(vector<type> & v){
