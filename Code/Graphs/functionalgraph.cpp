@@ -1,4 +1,4 @@
-/Functional Graph and auxiliary structures definition
+//Functional Graph and auxiliary structures definition
 //Binary Liftling in O(log max query)
 //Distance between vertices in O(VlogV) build, O(logV) query
 //Complete information about cycles and underlying trees
