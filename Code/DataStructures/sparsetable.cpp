@@ -1,7 +1,7 @@
 //Sparse Table: RMQ in O(nlogn) build, O(1) query
 //Customizable type and operations
 
-int lg(int x){
+int lg2(int x){
 	return __builtin_clzll(1ll) - __builtin_clzll((long long)x);
 	// log2(x) in O(1)
 }
