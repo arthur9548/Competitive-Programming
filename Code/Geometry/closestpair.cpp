@@ -1,5 +1,5 @@
 int dist(point a, point b){
-	point c = a-b; return c.x * c.x + c.y * c.y;
+	point c = a-b; return c.x * c.x + c.y * c.y; //euclidean distance
 }
 
 point rev(point a){
