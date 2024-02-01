@@ -1,4 +1,4 @@
-//Bellman-Ford algorithm: shortest paths from source in O(N*M)
+//Bellman-Ford algorithm: shortest paths from source in O(V*E)
 //Also detects and identifyes negative cycle in graph
 //Can be multisource if needed
 vi bellmanford(int n, int source, vector<pair<int, pii>> & edges){
@@ -23,7 +23,7 @@ vi bellmanford(int n, int source, vector<pair<int, pii>> & edges){
 
 
 //Optimized Bellman-Ford
-//O(N*M), but is closer to O(M) in random graphs
+//O(E*V), but is closer to O(E) in random graphs
 vi spfa(int n, vector<vector<pii>> & g, int source){
 	vi dists(n, oo); //distances from source
 	vector<bool> inqueue(n, false);
