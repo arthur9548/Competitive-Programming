@@ -1,4 +1,4 @@
-//Topological sorting of graph in O(n+m)
+//Topological sorting of graph in O(V+E)
 //Dificult to make alterations on the algorithm itself,
 //but alterations in graph and final order can be useful
 //Reverse order of reverse graph is different from normal order!
