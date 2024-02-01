@@ -15,7 +15,7 @@ struct SpTable{
 	vector<vector<type>> table;
 	
 	SpTable(vector<type> & v){
-		n = v.size(); logn = lg(n)+1;
+		n = v.size(); logn = lg2(n)+1;
 		values = v; table.assign(logn, vector<type>(n));
 		rep(i, 0, n)table[0][i] = values[i];
 		rep(i, 1, logn){
@@ -27,7 +27,7 @@ struct SpTable{
 	
 	type query(int l, int r){
 		assert l<=r;
-		int k = lg(r-l+1);
+		int k = lg2(r-l+1);
 		return spop(table[k][l], table[k][r+1-(1ll<<k)]);
 	}
 };
