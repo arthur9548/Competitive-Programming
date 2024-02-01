@@ -1,5 +1,5 @@
 //persistent dynamic segtree
-//time complexity is equal, but memory suffer O(qlogn) increase
+//time complexity is equal, but memory suffers O(qlogn) increase
 
 struct node{
 	int value, lx, rx;
