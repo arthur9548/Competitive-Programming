@@ -1,81 +1,37 @@
-vector<vector<int>> g(MMXN), gi(MMXN), scc(MMXN), scci(MMXN), comps(MMXN);
-bool visited[MMXN];
-bool active[MMXN];
-int component[MMXN];
-int degree[MMXN];
-int value[MXN];
-vector<int> order;
- 
-int n, m;
-
-#define ai(x) (MXN+x)
-#define nai(x) (MXN-x)
-#define id(x) (-(MXN-x))
- 
-void restart(){
-	rep(i, 0, MMXN)visited[i] = false;
-}
- 
-void dfs1(int v){
-	if (visited[v])return;
-	visited[v] = true;
-	for(int adj : g[v]) dfs1(adj);
-	order.pb(v);
-}
- 
-void dfs2(int v, int comp){
-	if (visited[v])return;
-	visited[v] = true;
-	component[v] = comp;
-	comps[comp].pb(v);
-	for(int adj : gi[v]){
-		if (visited[adj] and component[adj] != comp){
-			int adjp = component[adj]; scc[adjp].pb(comp); scci[comp].pb(adjp);
-			degree[adjp]++;
-		}
-		else dfs2(adj, comp);
+//Two SAT: model to solve boolean equation in O(N+M), where
+//N is the number of variables and M is the number of AND clauses
+//Clauses should contain only two variables (reduction to implications)
+struct TwoSAT{
+	int n; //number of variables
+	vvi g; //implication graph
+	Kosaraju kos; //needs Kosaraju structure (only comps are needed)
+	vi values; //values of variables (empty if impossible)
+	//1 = true, 0 = false
+	
+	TwoSAT (int s){
+		n = s; g.resize(2*n);
 	}
-}
- 
-void kosaraju(){
-	rep(i, 0, MMXN)if (active[i])dfs1(i);
-	restart(); reverse(all(order));
-	for(int v : order)dfs2(v, v);
-	restart();
-}
-
-void addedge(int n1, int n2){
-	g[nai(n1)].pb(ai(n2)); g[nai(n2)].pb(ai(n1));
-	gi[ai(n2)].pb(nai(n1)); gi[ai(n1)].pb(nai(n2));
-}
-
-vector<int> kahn(){
-	queue<int> q; vector<int> comps;
-	rep(i, 0, MMXN)if (active[i] and component[i] == i and degree[i] == 0)q.push(i);
-	while(not q.empty()){
-		int v = q.front(); q.pop();
-		comps.pb(v);
-		for(int adj : scci[v]){
-			degree[adj]--; if (degree[adj] == 0)q.push(adj);
+	
+	int idx(int a, bool value){
+		return 2*a + value;
+	}
+	
+	//boolean functions (add more)
+	void addor(int a, bool isa, int b, bool isb){
+		a = idx(a, isa); b = idx(b, isb);
+		g[a^1].pb(b); g[b^1].pb(a);
+	}
+	
+	//run Kosaraju to get variables
+	void run(){
+		kos = Kosaraju(g);
+		repstep(i, 0, 2*n, 2)if (kos.component[i]==kos.component[i+1])return;
+		values.assign(n, -1);
+		for(auto& v : kos.comps){
+			for(int val : v){
+				if (values[val>>1]!=-1)continue;
+				values[val>>1] = 1-val%2;
+			}
 		}
 	}
-}
-
-void run(){
-	rep(i, 1, n+1){
-		active[ai(i)] = active[nai(i)] = true;
-	}
-	kosaraju();
-	rep(i, 1, n+1){
-		if (component[ai(i)] == component[nai(i)]){
-			cout << IMP; return;
-		}
-	}
-	order = kahn();
-	for(int v : order){
-		for(int el : comps[v]){
-			int var = id(el);
-			if (not value[abs(var)])value[abs(var)] = var > 0 ? 1 : -1;
-		}
-	}
-}
+};
