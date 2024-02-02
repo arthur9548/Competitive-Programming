@@ -4,7 +4,7 @@
 struct Kosaraju{
 	int n, totalcomps; //number of strongly connected components
 	vvi g, gi; //graph structure
-	vvi cdg, cdgi; //condensed graph
+	vvi cdg, cdgi; //condensed graph (DAG)
 	vi component; //component of vertex (sorted by topological order)
 	vvi comps; //component list
 	
