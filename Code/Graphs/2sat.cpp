@@ -22,7 +22,7 @@ struct TwoSAT{
 		g[a^1].pb(b); g[b^1].pb(a);
 	}
 	
-	//run Kosaraju to get variables
+	//run Kosaraju to get values by implications
 	void run(){
 		kos = Kosaraju(g);
 		repstep(i, 0, 2*n, 2)if (kos.component[i]==kos.component[i+1])return;
