@@ -1,39 +1,42 @@
-void calcinclude(int pos, int ans){
-	return;
-}
-
-void calcexclude(int pos, int ans){
-	return;
-}
-
-vi mo(int n, int q, vector<pii> queries){
-	vi results(q);
-	int sq = sqrt(q)+1;
-	int b = (n+sq-1)/sq;
-	vector<pair<pii, pii>> moqueries;
-	rep(i, 0, q){
-		int l = queries[i].first, r = queries[i].second;
-		moqueries.pb({l/b, r}, {l, i});
+struct Query{
+	int l, r, lx, idx;
+	Query(int ql, int qr, int qidx, int qb){
+		l = ql; r = qr; idx = qidx; lx = l/qb;
 	}
+	bool operator<(const Query& o){
+		return make_pair(lx, r) < make_pair(o.lx, o.r);
+	}
+};
+
+vi mo(int n, vector<pii> queries){
+	int q = queries.size();
+	int sq = sqrt(q)+1, b = (n+sq-1)/sq;
+	vector<Query> moqueries;
+	rep(i, 0, q)moqueries.pb(Query(queries[i].first, queries[i].second, i, b));
 	sort(all(moqueries));
-	int cl=0, cr=0;
-	for(auto info : moqueries){
-		int idx = info.second.second;
-		int l = info.second.first, r = info.first.second;
-		int ans = 0;
-		while(cr < r){
-			cr++ calcinclude(cr, ans);
+	vi ans(q);
+	int cl=0, cr=0, cans=0;
+	auto include = [&](int pos)->void{
+		return;
+	};
+	auto exclude = [&](int pos)->void{
+		return;
+	};
+	include(0);
+	for(auto qry : moqueries){
+		while(cr < qry.r){
+			cr++; include(cr);
 		}
-		while(cl > l){
-			cl--; calcinclude(cl, ans);
+		while(cl > qry.l){
+			cl--; include(cl);
 		}
-		while(cl < l){
-			calcexclude(cl, ans); cl++;
+		while(cl < qry.l){
+			exclude(cl); cl++;
 		}
-		while(cr > r){
-			calc(exclude(cr, ans)); cr--;
+		while(cr > qry.r){
+			exclude(cr); cr--;
 		}
-		results[i] = ans;
+		ans[q.idx] = cans;
 	}
-	return results;
+	return ans;
 }
