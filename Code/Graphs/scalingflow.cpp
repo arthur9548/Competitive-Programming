@@ -1,3 +1,9 @@
+//Scaling maxflow: algorithm to get maxflow in E*log(maxflow)*(V or E)
+//depending on option of Dinic or DFS Ford-Fulkerson
+//Can be used for matchings and mincuts
+//In case of non-integer values, remove scaling property
+//(mxbound=EPS), with a V factor instead of log in complexity
+
 struct Edge{
 	int a, b, w, ow; //vertices and weight (capacity left)
 	bool is_reverse;
@@ -7,17 +13,18 @@ struct Edge{
 };
 
 struct Scaling{ //Scaling maxflow
-	int n, m;
+	int n, m, mxbound;
 	vvi g;
 	vector<Edge> edges;
 	
 	Scaling(int n_){
-		g.resize(n_); n = n_; m = 0;
+		g.resize(n_); n = n_; m = 0; mxbound = 1;
 	}
 	
 	void add_edge(int a, int b, int w){
 		g[a].pb(m); g[b].pb(m+1); m += 2;
 		edges.pb(Edge(a, b, w, false)); edges.pb(Edge(b, a, 0, true));
+		while(w >= mxbound)mxbound <<= 1;
 	}
 	
 	void restore(){ //restoring edges' capacity
@@ -26,7 +33,7 @@ struct Scaling{ //Scaling maxflow
 	
 	int ffmaxflow(int source, int sink){ //scaling ford-fulkerson maxflow
 		int flow = 0;
-		vb visited(n, false); int cbound=oo;
+		vb visited(n, false); int cbound=mxbound;
 		auto dfs = [&](auto self, int v, int mn)->int{
 			if (visited[v])return -1;
 			visited[v] = true;
@@ -55,7 +62,7 @@ struct Scaling{ //Scaling maxflow
 	}
 	
 	int dinicmaxflow(int source, int sink){ //scaling dinic
-		int res = 0, cbound = (1ll<<31);
+		int res = 0, cbound = mxbound;
 		vi cedge(n, 0); vi level(n, -1);
 		auto make_dag = [&](int bound)->bool{ //dinic dag
 			level.assign(n, -1); level[source] = 0;
