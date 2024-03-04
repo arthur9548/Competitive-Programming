@@ -1,8 +1,10 @@
 //Scaling maxflow: algorithm to get maxflow in E*log(maxflow)*(V or E)
-//depending on option of Dinic or DFS Ford-Fulkerson
+//depending on option of Dinic or DFS Ford-Fulkerson (Edmonds-Karp also included)
+//Only Dinic passes in SPOJ FASTFLOW
 //Can be used for matchings and mincuts
 //In case of non-integer values, remove scaling property
 //(mxbound=EPS), with a V factor instead of log in complexity
+//Scaling removal may increase performance in random graphs
 
 struct Edge{
 	int a, b, w, ow; //vertices and weight (capacity left)
