@@ -60,7 +60,42 @@ struct Scaling{ //Scaling maxflow
 		//uncomment if needs to restore edges capacity after algorithm
 		return flow;
 	}
-	
+
+	int ekmf(int source, int sink){ //scaling edmonds-karp
+		int res=0, cbound=mxbound;
+		vi parent(n, -1);
+		auto push_flow = [&](int bound)->int{ //get flow with bfs
+			queue<pii> q; rep(i, 0, n)parent[i] = -1;
+			parent[source] = -2;
+			q.push({source, oo});
+			while(not q.empty()){
+				auto p = q.front(); q.pop();
+				int v=p.first, f=p.second;
+				for(int eidx : g[v]){
+					auto& e = edges[eidx];
+					if (parent[e.b] == -1 and e.w >= bound){
+						parent[e.b] = eidx; int nf = min(f, e.w);
+						if (e.b == sink)return nf;
+						else q.push({e.b, nf});
+					}
+				}
+			}
+			return 0;
+		};
+		while(cbound){
+			int nf = push_flow(cbound);
+			if (nf){
+				res += nf; int idx = parent[sink];
+				while(idx != -2){
+					edges[idx].w -= nf; edges[idx^1].w += nf; //fix path from source to sink
+					idx = parent[edges[idx].a]; //also fix reverse edges
+				}
+			}
+			else cbound /= 2;
+		}
+		return res;
+	}
+
 	int dinicmaxflow(int source, int sink){ //scaling dinic
 		int res = 0, cbound = mxbound;
 		vi cedge(n, 0); vi level(n, -1);
