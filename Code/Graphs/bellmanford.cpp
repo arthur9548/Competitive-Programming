@@ -40,7 +40,7 @@ vi spfa(int n, vector<vector<pii>> & g, int source){
 	enqueue(source); dists[source] = 0;
 	while(not q.empty()){
 		int v = dequeue();
-		if (visited[v]>n)return vector<int>() //negative cycle
+		if (visited[v]>n)return vector<int>(); //negative cycle
 		for(auto edge : g[v]){
 			int adj = edge.first, d = edge.second;
 			if (dists[adj] > dists[v]+d){
