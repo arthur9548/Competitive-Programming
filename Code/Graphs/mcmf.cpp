@@ -137,35 +137,19 @@ struct MCMF{
 	pii dinicmcmf(int source, int sink){
 		rm = m;
 		int res = 0, cost = 0; 
-		vi cedge(n, 0); vi level(n, -1);
+		vi cedge(n, 0); vb online(n, false);
 		auto in_spdag = [&](Edge& e)->bool{
-			return (dists[e.b]-dists[e.a]==pot_cost(e));
-		};
-		auto in_dinic = [&](Edge& e)->bool{
 			if (not e.w)return false;
-			if (level[e.b] != level[e.a]+1)return false;
-			return in_spdag(e);
-		};
-		auto make_dag = [&]()->bool{//Dinic BFS
-			level.assign(n, -1); level[source] = 0;
-			queue<int> q; q.push(source);
-			while(not q.empty()){
-				int v = q.front(); q.pop();
-				for(int eidx : g[v]){
-					auto& e = edges[eidx];
-					if (not in_spdag(e) or not e.w)continue; 
-					if (level[e.b]!=-1)continue;
-					level[e.b] = level[v]+1; q.push(e.b);
-				}
-			}
-			return level[sink]!=-1;
+			return (dists[e.b]-dists[e.a]==pot_cost(e));
 		};
 		auto push_flow = [&](auto self, int v, int flow)->int{//Dinic DFS
 			if (v == sink)return flow;
+			online[v] = true;
 			int pushed = 0;
 			for(int& i = cedge[v]; i < sz(g[v]); i++){
 				int eidx = g[v][i]; auto& e = edges[eidx];
-				if (not in_dinic(e))continue;
+				if (not in_spdag(e))continue;
+				if (online[e.b])continue; //avoids cycle with 0 cost
 				int f = self(self, e.b, min(flow, e.w));
 				flow -= f; pushed += f;
 				e.w -= f; 
@@ -173,19 +157,20 @@ struct MCMF{
 				if (edges[eidx^1].w==0 and f)rm++; 
 				edges[eidx^1].w += f;
 				cost += e.c*f;
-				if (flow==0)return pushed;
+				if (flow==0){
+					online[v] = false; return pushed;
+				}
 			}
+			online[v] = false;
 			return pushed;
 		};
 		
 		//dists_init(source); //comment if all cs>0, SPFA becomes redundant
 		while(true){
-			dists_calc(source);
+			dists_calc(source); //uses s.p. DAG as Dinic DAG
 			if (dists[sink]==oo)break; //sink is unreachable
-			while(make_dag()){
-				cedge.assign(n, 0);
-				while(int cf = push_flow(push_flow, source, oo)) res += cf;
-			}
+			cedge.assign(n, 0);
+			while(int cf = push_flow(push_flow, source, oo)) res += cf;
 		}
 		return {res, cost};
 	}
