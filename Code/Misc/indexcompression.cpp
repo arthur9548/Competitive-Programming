@@ -11,4 +11,5 @@ map<int, int> compress(vi & v){
 		trad[v[els[i].second]] = val;
 		v[els[i].second] = val;
 	}
+	return trad;
 }
