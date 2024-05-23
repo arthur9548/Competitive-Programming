@@ -1,3 +1,29 @@
+using cd = complex<double>;
+struct cx{
+	cd v;
+	cx(cd val=cd(0)){v = val;}
+	static cx proot(int n){
+		return {cd(cos(2*PI/n), sin(2*PI/n))};
+	}
+	cx operator+(const cx & o)const{return {v+o.v};}
+	cx operator-(const cx & o)const{return {v-o.v};}
+	cx operator*(const cx & o)const{return {v*o.v};}
+	cx operator/(const cx & o)const{return {v/o.v};}
+	bool operator==(const cx & o)const{return v==o.v;}
+	operator int()const {return round(v.real());}
+};
+
+int revbits(int x, int n){
+	int res = 0;
+	int lg = __builtin_clz(1) - __builtin_clz(n);
+	rep(i, 0, lg){
+		if (x & (1<<i)){
+			res |= (1<<(lg-1-i));
+		}
+	}
+	return res;
+}
+
 template<class num> struct FFT{
 	typedef vector<num> vnum;
 	vector<num> proots; 
