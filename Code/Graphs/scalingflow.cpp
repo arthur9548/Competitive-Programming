@@ -103,7 +103,7 @@ struct Scaling{ //Scaling maxflow
 		vi cedge(n, 0); vi level(n, -1);
 		auto make_dag = [&](int bound)->bool{ //dinic dag
 			level.assign(n, -1); level[source] = 0;
-			queue<int> q; q.push(0);
+			queue<int> q; q.push(source);
 			while(not q.empty()){
 				int v = q.front(); q.pop();
 				for(int eidx : g[v]){
