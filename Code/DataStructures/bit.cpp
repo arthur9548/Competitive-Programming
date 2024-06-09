@@ -20,7 +20,7 @@ struct BIT{
 	}
 	template<class... A>
 	T query(int l, int r, A... ps){
-		T res; r++;
+		T res={T::id}; r++;
 		for(;r>=1;r-=lastbit(r))res+=bit[r].query(ps...);
 		for(;l>=1;l-=lastbit(l))res-=bit[l].query(ps...);
 		return res;
@@ -29,13 +29,13 @@ struct BIT{
 
 template<class T>
 struct BIT<0, T>{
-	T val;
+	T val={T::id};
 	void add(T nval){val+=nval;}
 	T query(){return val;}
 };
 
 struct AG{ //abelian group analogous to int addition
-	int v = 0;
+	int v; static const int id = 0;
 	AG& operator+=(const AG& o){v+=o.v;return *this;}
 	AG& operator-=(const AG& o){v-=o.v;return *this;}
 };
