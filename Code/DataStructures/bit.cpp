@@ -1,8 +1,10 @@
 //Title: Binary Indexed Tree (BIT)
 //Description: fast range query and point update
+//Complexity: O(logn ^ D) query and update, O(n^D) memory
 //Restrictions: elements must be of a abelian group (+=, -=, 0)
-//Observations: 1-indexed only in implementation, interface is 0-indexed
-//Complexity: O(logn) query and update, about 1.5x faster than recursive segtree
+//Observations: 
+//--- 1-indexed only in implementation, interface is 0-indexed
+//--- Very good constant factor
 //Tested at: CSES-Dynamic Range Sum Queries and CSES-Forest Queries II
 
 template<int D, class T> 
