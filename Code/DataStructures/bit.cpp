@@ -1,4 +1,4 @@
-//Title: Binary Indexed Tree (BIT)
+//Title: multidimensional Binary Indexed Tree (BIT)
 //Description: fast range query and point update
 //Complexity: O(logn ^ D) query and update, O(n^D) memory
 //Restrictions: elements must be of a abelian group (+=, -=, 0)
