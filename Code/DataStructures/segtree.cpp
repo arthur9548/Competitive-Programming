@@ -1,53 +1,52 @@
-//Segment Tree: 0-indexed iteractive update, custom query (O(log))
-//easily customized: choose type of node, merge operation and query aspect
-//iteractive is about 1.2 faster than recursive segtree
+//Title: multidimensional Segment Tree (SegTree)
+//Description: range query and point update
+//Complexity: O(logn ^ D) query and update and O(n^D) memory
+//Restrictions: elements must be of a Monoid (*, id)
+//Observations:
+//--- 1-indexed and half open in internal implementation only
+//--- Constant factor of D^2 (small dimensions are faster)
+//Tested at: CSES-Dynamic Range Sum Queries and CSES-Forest Queries II
 
-#define parent(pos) ((pos/2)-1+(pos&1))
-template<typename type>
+template<int D, class T>
 struct SegTree{
-	using assoc_op = function<type(type, type)>;
-	int n; //seg n, not original n
-	vector<type> seg;
-	assoc_op merge;
-	type neutral;
-	
-	SegTree(vector<type> v, assoc_op op, type iden){
-		int s = sz(v);
-		if (__builtin_popcount(s)==1) n = s;
-		else n = 1<<(1+__builtin_clz(1)-__builtin_clz(s));
-		neutral = iden; merge = op;
-		seg.assign(2*n-1, neutral);
-		rep(i, 0, s)update(i, v[i]);
+	int n;
+	vector<SegTree<D-1, T>> seg;
+	template<class... A>
+	SegTree(int s, A... ds):n(s),seg(2*n, SegTree<D-1, T>(ds...)){}
+	template<class... A>
+	T get(int p, A... ps){return seg[p+n].get(ps...);}
+	template<class... A>
+	void update(T x, int p, A... ps){
+		p+=n; seg[p].update(x, ps...);
+		for(p>>=1;p>=1;p>>=1)
+		seg[p].update(seg[2*p].get(ps...)*seg[2*p+1].get(ps...), ps...);
 	}
-	
-	void update(int pos, type value){
-		pos += n-1; seg[pos] = value;
-		while(pos){
-			pos = parent(pos);
-			seg[pos] = merge(seg[2*pos+1], seg[2*pos+2]);
+	template<class... A>
+	T query(int l, int r, A... ps){
+		T lv={T::id},rv={T::id};
+		for(l+=n,r+=n+1;l<r;l>>=1,r>>=1){
+			if (l&1)lv = lv*seg[l++].query(ps...);
+			if (r&1)rv = seg[--r].query(ps...)*rv;
 		}
-	}
-	
-	type query(int l, int r){
-		//return iquery(l, r); //if iteractive doesnt need interface
-		return rquery(l, r+1, 0, 0, n);
-	}
-	
-	type iquery(int l, int r){//[l,r]
-		l+=n-1; r+=n-1; type res = neutral;
-		while(l<=r){
-			if (l%2==0)res = merge(seg[l++], res);
-			if (r%2==1)res = merge(res, seg[r--]);
-			l = parent(l); r = parent(r);
-		}
-		return res;
-	}
-	
-	
-	type rquery(int l, int r, int pos, int lx, int rx){//[l,r[
-		if (r <= lx or l >= rx)return neutral;
-		if (l <= lx and r >= rx)return seg[pos];
-		int mid = lx+(rx-lx)/2;
-		return merge(rquery(l,r,2*pos+1,lx,mid), rquery(l,r,2*pos+2,mid,rx));
+		return lv*rv;
 	}
 };
+ 
+template<class T>
+struct SegTree<0, T>{
+	T val={T::id};
+	void update(T x){val=x;}
+	T query(){return val;}
+	T get(){return val;}
+};
+ 
+struct M{
+	int v; static const int id = 0;
+	M operator*(const M& o){return {v+o.v};}
+};
+
+void example(){
+	SegTree<3, M> seg(3, 4, 5); //3x4x5 seg
+	seg.update(M{1}, 0, 1, 2); //added 1 to point (0,1,2)
+	cout << seg.query(0, 2, 0, 3, 0, 4).v << endl; //query of whole seg
+}
