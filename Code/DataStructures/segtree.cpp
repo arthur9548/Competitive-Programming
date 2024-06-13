@@ -4,7 +4,7 @@
 //Restrictions: elements must be of a Monoid (*, id)
 //Observations:
 //--- 1-indexed and half open in internal implementation only
-//--- Constant factor of D^2 (small dimensions are faster)
+//--- Constant factor of D^2 in update
 //Tested at: CSES-Dynamic Range Sum Queries and CSES-Forest Queries II
 
 template<int D, class T>
