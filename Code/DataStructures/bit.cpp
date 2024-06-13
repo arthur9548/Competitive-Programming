@@ -15,8 +15,8 @@ struct BIT{
 	BIT(int s, A... ds):n(s),bit(n+1, BIT<D-1, T>(ds...)){}
 	inline int lastbit(int x){return x&(-x);}
 	template<class... A> 
-	void add(int pos, A... ps){
-		for(pos++;pos<=n;pos+=lastbit(pos))bit[pos].add(ps...);
+	void add(T x, int p, A... ps){
+		for(p++;p<=n;p+=lastbit(p))bit[p].add(x, ps...);
 	}
 	template<class... A>
 	T query(int l, int r, A... ps){
@@ -30,7 +30,7 @@ struct BIT{
 template<class T>
 struct BIT<0, T>{
 	T val={T::id};
-	void add(T nval){val+=nval;}
+	void add(T x){val+=x;}
 	T query(){return val;}
 };
 
@@ -42,6 +42,6 @@ struct AG{ //abelian group analogous to int addition
 
 void example(){
 	BIT<3, AG> bit(3, 4, 5); //3D 3x4x5 bit
-	bit.add(0, 0, 0, AG{5}); //added 5 at first point
+	bit.add(AG{5}, 0, 0, 0); //added 5 at first point
 	cout << bit.query(0, 2, 0, 3, 0, 4).v << endl; //query of whole bit
 }
