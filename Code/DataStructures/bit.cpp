@@ -5,21 +5,19 @@
 //Observations: 
 //--- 1-indexed only in implementation, interface is 0-indexed
 //--- Very good constant factor
-//Tested at: CSES-Dynamic Range Sum Queries and CSES-Forest Queries II
+//Tested at: CSES-Dynamic Range Sum Queries and Timus-UFOs
 
+#define MAs template<class... As> //multiple arguments
 template<int D, class T> 
 struct BIT{
 	int n;
 	vector<BIT<D-1, T>> bit;
-	template<class... A>
-	BIT(int s, A... ds):n(s),bit(n+1, BIT<D-1, T>(ds...)){}
+	MAs BIT(int s, As... ds):n(s),bit(n+1, BIT<D-1, T>(ds...)){}
 	inline int lastbit(int x){return x&(-x);}
-	template<class... A> 
-	void add(T x, int p, A... ps){
+	MAs void add(T x, int p, As... ps){
 		for(p++;p<=n;p+=lastbit(p))bit[p].add(x, ps...);
 	}
-	template<class... A>
-	T query(int l, int r, A... ps){
+	MAs T query(int l, int r, As... ps){
 		T res={T::id}; r++;
 		for(;r>=1;r-=lastbit(r))res+=bit[r].query(ps...);
 		for(;l>=1;l-=lastbit(l))res-=bit[l].query(ps...);
