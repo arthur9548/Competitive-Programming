@@ -4,25 +4,22 @@
 //Restrictions: elements must be of a Monoid (*, id)
 //Observations:
 //--- 1-indexed and half open in internal implementation only
-//--- Constant factor of D^2 in update
-//Tested at: CSES-Dynamic Range Sum Queries and CSES-Forest Queries II
+//--- Constant factor of 2^D in memory and operations and D^2 in update
+//Tested at: CSES-Dynamic Range Minimum Queries and CF-Valiant's New Map
 
+#define MAs template<class... As> //multiple arguments
 template<int D, class T>
 struct SegTree{
 	int n;
 	vector<SegTree<D-1, T>> seg;
-	template<class... A>
-	SegTree(int s, A... ds):n(s),seg(2*n, SegTree<D-1, T>(ds...)){}
-	template<class... A>
-	T get(int p, A... ps){return seg[p+n].get(ps...);}
-	template<class... A>
-	void update(T x, int p, A... ps){
+	MAs SegTree(int s, As... ds):n(s),seg(2*n, SegTree<D-1, T>(ds...)){}
+	MAs T get(int p, As... ps){return seg[p+n].get(ps...);}
+	MAs void update(T x, int p, As... ps){
 		p+=n; seg[p].update(x, ps...);
 		for(p>>=1;p>=1;p>>=1)
 		seg[p].update(seg[2*p].get(ps...)*seg[2*p+1].get(ps...), ps...);
 	}
-	template<class... A>
-	T query(int l, int r, A... ps){
+	MAs T query(int l, int r, As... ps){
 		T lv={T::id},rv={T::id};
 		for(l+=n,r+=n+1;l<r;l>>=1,r>>=1){
 			if (l&1)lv = lv*seg[l++].query(ps...);
@@ -35,9 +32,9 @@ struct SegTree{
 template<class T>
 struct SegTree<0, T>{
 	T val={T::id};
+	T get(){return val;}
 	void update(T x){val=x;}
 	T query(){return val;}
-	T get(){return val;}
 };
  
 struct M{
