@@ -6,29 +6,26 @@
 //--- 1-indexed in internal implementation only
 //--- Query has a constant factor of 2^D
 //--- Don't forget to "init" Psum before querying!
-//Tested at: CSES-Static Range Sum Queries and CSES-Forest Queries
+//Tested at: CSES-Static Range Sum Queries and CF-Counting Rectangles is Fun
 
+#define MAs template<class... As> //multiple arguments
 template<int D, class T>
 struct Psum{
 	int n;
 	vector<Psum<D-1, T>> v;
-	template<class... A>
-	Psum(int s, A... ds):n(s+1),v(n,Psum<D-1, T>(ds...)){}
-	template<class... A>
-	void set(T x, int p, A... ps){v[p+1].set(x, ps...);}
-	template<class... A>
+	MAs Psum(int s, As... ds):n(s+1),v(n,Psum<D-1, T>(ds...)){}
+	MAs void set(T x, int p, As... ps){v[p+1].set(x, ps...);}
 	void push(auto p){rep(i, 1, n)v[i].push(p.v[i]);}
-	void init(){v[0].init(); rep(i, 1, n)v[i].init(),v[i].push(v[i-1]);}
-	template<class... A>
-	T query(int l, int r, A... ps){return v[r+1].query(ps...)-v[l].query(ps...);}
+	void init(){rep(i, 1, n)v[i].init(),v[i].push(v[i-1]);}
+	MAs T query(int l, int r, As... ps){return v[r+1].query(ps...)-v[l].query(ps...);}
 };
 
 template<class T>
 struct Psum<0, T>{
 	T val={T::id};
-	void init(){}
 	void set(T x){val=x;}
 	void push(auto a){val=a.val+val;}
+	void init(){}
 	T query(){return val;}
 };
 
