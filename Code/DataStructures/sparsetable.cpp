@@ -1,7 +1,7 @@
 //Title: multidimensional Sparse Table
 //Description: static idempotent range queries
 //Complexity: O((nlogn)^D) build and memory, O(1) query
-//Restrictions: elements must be of an Idempotent Monoid (^, id)
+//Restrictions: elements must be of an Idempotent (and commutative) Monoid (^, id)
 //Observations:
 //--- Query has a constant factor of 2^D
 //--- Don't forget to "init" the Sparse Table before querying!
