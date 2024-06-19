@@ -1,7 +1,7 @@
 //Title: multidimensional Prefix/Partial/Cummulative Sum (Psum)
 //Description: static range queries
 //Complexity: O(n^D) build and memory, O(1) query
-//Restrictions: elements must belong to a Group (+, -, id)
+//Restrictions: elements must belong to a Group (op, inv, id)
 //Observations:
 //--- 1-indexed in internal implementation only
 //--- Query has a constant factor of 2^D
