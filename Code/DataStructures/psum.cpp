@@ -9,36 +9,38 @@
 //Tested at: CSES-Static Range Sum Queries and CF-Counting Rectangles is Fun
 
 #define MAs template<class... As> //multiple arguments
-template<int D, class T>
-struct Psum{
+template<int D, class S>
+struct Psum{ using T = typename S::T;
 	int n;
-	vector<Psum<D-1, T>> v;
-	MAs Psum(int s, As... ds):n(s+1),v(n,Psum<D-1, T>(ds...)){}
+	vector<Psum<D-1, S>> v;
+	MAs Psum(int s, As... ds):n(s+1),v(n,Psum<D-1, S>(ds...)){}
 	MAs void set(T x, int p, As... ps){v[p+1].set(x, ps...);}
-	void push(auto p){rep(i, 1, n)v[i].push(p.v[i]);}
+	void push(Psum& p){rep(i, 1, n)v[i].push(p.v[i]);}
 	void init(){rep(i, 1, n)v[i].init(),v[i].push(v[i-1]);}
-	MAs T query(int l, int r, As... ps){return v[r+1].query(ps...)-v[l].query(ps...);}
+	MAs T query(int l, int r, As... ps){
+		return S::op(v[r+1].query(ps...),S::inv(v[l].query(ps...)));
+	}
 };
 
-template<class T>
-struct Psum<0, T>{
-	T val={T::id};
+template<class S>
+struct Psum<0, S>{ using T = typename S::T;
+	T val=S::id;
 	void set(T x){val=x;}
-	void push(auto a){val=a.val+val;}
+	void push(Psum& a){val=S::op(a.val,val);}
 	void init(){}
 	T query(){return val;}
 };
 
 struct G{
-	int v; static const int id = 0;
-	G operator+(const G & o){return {v+o.v};}
-	G operator-(const G & o){return {v-o.v};}
+	using T = int;
+	static constexpr T id = 0;
+	static T op(T a, T b){return a+b;}
+	static T inv(T a){return -a;}
 };
 
 void example(){
-	Psum<3, G> psum(3, 5, 4); //3d 3x5x4 psum
-	psum.set(G{1}, 0, 0, 0); //origin has value 1
-	psum.set(G{2}, 1, 2, 3);
-	psum.init(); //important!
-	cout << psum.query(0, 1, 0, 2, 0, 3).v << endl; //1+2=3
+	Psum<3, G> psum(3, 4, 5); //3x4x5 psum
+	psum.set(10, 1, 2, 3); //set point (1, 2, 3) to 10
+	psum.init();
+	cout << psum.query(0,2,0,3,0,4) << endl; //query of whole psum
 }
