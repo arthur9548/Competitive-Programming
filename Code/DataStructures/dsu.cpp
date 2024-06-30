@@ -1,28 +1,21 @@
-//DSU: structure to unite disjoint sets
-//Total time is ~O(n) (slightly worse)
+//Title: Disjoint Set Union (DSU) / Union Find Structure
+//Description: eficient merging of disjoint components
+//Complexity: amortized O(~1) merging and component identification
+//Restrictions: none
+//Observations:
+//--- merge operation will return representatives of merged components for
+//    aditional calculations
+//Tested at: CSES-Road Construction
+
 struct DSU {
-	int components; //number of components
-	vi cur_rep, level; //representatives and level in dsu tree
-	vi szs; //size of each component
-	
-	DSU(int n){
-		cur_rep.resize(n); level.assign(n, 0); szs.assign(n, 1);
-		rep(i, 0, n)cur_rep[i] = i;
-		components = n;
-	}
-	
-	int find_rep(int a){
-		if (cur_rep[a]==a)return a;
-		else return cur_rep[a] = find_rep(cur_rep[a]);
-	}
-	
-	void merge(int a, int b){
-		a = find_rep(a); b = find_rep(b);
-		if (a==b)return;
-		if (level[b]>level[a])swap(a, b);
-		cur_rep[b] = a; 
-		level[a] += (level[a]==level[b]);
-		szs[a] += szs[b];
-		components--;
+	vi cr, rnk; //current representatives and level in dsu tree
+	DSU(int n):cr(n),rnk(n, 0){rep(i, 0, n)cr[i] = i;}
+	int repr(int a){return cr[a]==a?a:cr[a]=repr(cr[a]);}
+	//use repr(a) instead of cr[a] for getting representative
+	pii merge(int a, int b){
+		a = repr(a); b = repr(b); if (rnk[b]>rnk[a])swap(a, b);
+		pii reps = {a, b}; if (a==b)return reps;
+		rnk[a] += (rnk[a]==rnk[b]); 
+		cr[b] = a; return reps;
 	}
 };

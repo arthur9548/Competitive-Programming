@@ -1,19 +1,25 @@
-//Bellman-Ford algorithm: shortest paths from source in O(V*E)
-//Also detects and identifyes negative cycle in graph
-//Can be multisource if needed
-vi bellmanford(int n, int source, vector<pair<int, pii>> & edges){
-	vi dists(n, oo); //distances from source
-	dists[source] = 0;
-	vi path(n, -1); //if path recover is needed, like functional graph
+//Title: Bellman-Ford and SPFA algorithms
+//Description: shortest distance from sources and negative cycle detection
+//Complexity: O(V*E), SPFA is O(E) in random graphs
+//Restrictions: distance unit should have +, < and conversion to 0 and oo
+//Observations:
+//--- Functions return empty vector in case of negative cycle
+//--- The latter can be retrieved by path recover
+//Tested at: CSES-High Score
+
+template<class T>
+vector<T> bellmanford(vi sources, vector<vector<pair<int, T>>> & g){
+	int n = sz(g); vector<T> dists(n, T(oo));
+	for(int s : sources)dists[s] = T(0);
 	bool worked = true;
-	rep(i, 0, n){
-		for(auto e : edges){
-			int c = e.first, a = e.second.first, b = e.second.second;
-			if (dists[a]==oo)continue;
+	vector<tuple<T, int, int>> edges;
+	rep(a, 0, n)for(auto [b, c] : g[a])edges.pb({c, a, b});
+	rep(i, 0, n+1){
+		for(auto [c, a, b] : edges){
+			if (dists[a]==T(oo))continue;
 			if (dists[a]+c < dists[b]){
-				path[b] = a;
-				if (i<(n-1))dists[b] = dists[a]+c;
-				else worked = false; //negative cycle can be retrieved
+				if (i<n)dists[b] = dists[a]+c;
+				else worked = false;
 			}
 		}
 	}
@@ -21,31 +27,22 @@ vi bellmanford(int n, int source, vector<pair<int, pii>> & edges){
 	return dists;
 }
 
-
-//Optimized Bellman-Ford
-//O(E*V), but is closer to O(E) in random graphs
-vi spfa(int n, vector<vector<pii>> & g, int source){
-	vi dists(n, oo); //distances from source
-	vector<bool> inqueue(n, false);
-	vi visited(n, 0); //counter to stop infinite loop
-	queue<int> q; //spfa queue and functions
-	auto enqueue = [&](int v){
-		if (inqueue[v])return;
-		q.push(v); inqueue[v] = true;
-	};
-	auto dequeue = [&]()->int{
-		int v = q.front(); q.pop();
-		inqueue[v] = false; return v;
-	};
-	enqueue(source); dists[source] = 0;
+template<class T>
+vector<T> spfa(vi sources, vector<vector<pair<int, T>>> & g){
+	int n = sz(g); vector<T> dists(n, T(oo));
+	vector<bool> inq(n, false); vi visited(n, 0);
+	queue<int> q;
+	for(int s : sources){
+		q.push(s); inq[s] = true; dists[s] = T(0);
+	}
 	while(not q.empty()){
-		int v = dequeue();
-		if (visited[v]>n)return vector<int>(); //negative cycle
-		for(auto edge : g[v]){
-			int adj = edge.first, d = edge.second;
-			if (dists[adj] > dists[v]+d){
+		int v = q.front(); q.pop(); inq[v] = false;
+		if (visited[v]>n)return vector<T>();
+		for(auto [adj, d] : g[v]){
+			if (dists[adj]>dists[v]+d){
 				dists[adj] = dists[v]+d;
-				enqueue(adj); visited[adj]++;
+				if (not inq[adj])q.push(adj); 
+				inq[adj] = true; visited[adj]++;
 			}
 		}
 	}
