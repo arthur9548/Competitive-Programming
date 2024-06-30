@@ -1,57 +1,44 @@
-//Dijsktra: shortest paths from source to all other vertices in O(V + ElogV)
-//Assumes positive weights in all edges
-//Can be adapted to creat shortest path DAG from root
-//Easily modified to be multisource
-vi dkstra(int source, vector<vector<pii>> & g){
-	int n = g.size();
-	vb visited(n, false); //vertices visited only once
-	vi dists(n, oo);
-	dists[source] = 0;
-	priority_queue<pii, vector<pii>, greater<pii>> pq; //min heap
-	pq.push({0, source});
+//Title: Dijkstra algorithm
+//Description: shortest distance from sources to all vertices
+//Complexity: O((V+E)log(V+E)) usual, O(E+V^2) dense version
+//Restrictions: distance unit should have +, > and conversion from 0 and oo
+//Observations:
+//--- can be used to generate shortest paths DAG
+//Tested at: CSES-Shortest Routes I
+
+#define V vector
+
+template<class T>
+V<T> dkstra(V<int> sources, V<V<pair<int, T>>> & g){
+	int n = g.size(); V<bool> visited(n, false); 
+	V<T> dists(n, T(oo)); //infinite distance
+	using P = pair<T, int>; priority_queue<P, V<P>, greater<P>> pq;
+	for(int s : sources)pq.push({dists[s]=T(0), s});
 	while(not pq.empty()){
-		auto p = pq.top(); pq.pop();
-		int v = p.second, d = p.first;
+		auto [d, v] = pq.top(); pq.pop();
 		if (visited[v])continue;
 		visited[v] = true;
-		for(auto edge : g[v]){
-			int adj=edge.first, nd=edge.second;
-			if (dists[adj] > d+nd){ //optimizes memory and runtime
-				dists[adj] = d+nd;
-				pq.push({d+nd, adj});
-				//space to add the resulting edge in SPDAG
-			}
-		}
-	}
-	return dists; //default returning
+		for(auto [adj, nd] : g[v])
+			if (dists[adj] > d+nd)
+				pq.push({dists[adj]=d+nd, adj});
+	}			//edge in spdag from v to adj
+	return dists;
 }
 
-//For dense graphs, a V*V approach is faster than ElogV, 
-//since E = O(V*V)
-vi densedkstra(int source, vector<vector<pii>> & g){
-	int n = g.size();
-	vb visited(n, false);
-	vi dists(n, oo);
-	dists[source] = 0;
-	auto get_min = [&]()->int{
-		int best = -1;
-		rep(v, 0, n){
-			if (visited[v])continue;
-			if (best==-1)best = v;
-			else if (dists[v] < dists[best])best = v;
-		}
-		return best;
-	};
-	int v = source;
+template<class T>
+V<T> densedkstra(V<int> sources, V<V<pair<int, T>>> & g){
+	int n = g.size(); V<bool> visited(n, false);
+	V<T> dists(n, T(oo));
+	for(int s : sources)dists[s] = T(0);
+	int v = sources[0];
 	while(v != -1){
 		visited[v] = true;
-		for(auto edge : g[v]){
-			int adj = edge.first, nd = edge.second;
-			if (dists[adj] > dists[v]+nd){
-				dists[adj] = dists[v]+nd;
-			}
+		for(auto [adj, nd] : g[v])dists[adj] = min(dists[adj], dists[v]+nd);
+		v = -1; 
+		rep(i, 0, n){
+			if (visited[i])continue;
+			if (v==-1 or dists[v]>dists[i])v = i;
 		}
-		v = get_min();
 	}
 	return dists;
 }
