@@ -1,55 +1,40 @@
-//Kosaraju: algorithm to get strongly connected components 
-//sorted by topological order in O(V+E)
-//Structure contains info on condensed graph and components
+//Title: Kosaraju algorithm
+//Description: strongly connected components topologically sorted
+//Complexity: O(V+E)
+//Restrictions: none
+//Observations:
+//--- Contains component ID of vertices (cid), condensed graph (cdg)
+//    of components and their list sorted in topological order
+//Tested at: CSES-Planet and Kingdoms
+
 struct Kosaraju{
-	int n, totalcomps; //number of strongly connected components
-	vvi g, gi; //graph structure
-	vvi cdg, cdgi; //condensed graph (DAG)
-	vi component; //component of vertex (sorted by topological order)
-	vvi comps; //component list
+	int n; vi cid; 
+	vector<vi> cdg, comps;
 	
-	Kosaraju(vvi& og){
-		n = og.size(); totalcomps=0;
-		g.resize(n); gi.resize(n);
-		component.resize(n);
-		rep(i, 0, n){
-			for(int j : og[i]){
-				gi[j].pb(i); g[i].pb(j);
-			}
-		}
-		run(); //Kosaraju algorithm
-	}
-	
-	void run(){
-		vb visited(n, false);
-		vi order, curvs;
-		auto dfs1 = [&](auto self, int v){
-			if (visited[v])return;
-			visited[v] = true;
-			for(int adj : g[v])self(self, adj);
+	Kosaraju(vector<vi>& g):n(sz(g)), cid(n, -1){
+		vector<vi> gi; rep(i, 0, n)for(int j : g[i])gi[j].pb(i);
+		vi vis(n, 0), order;
+		auto dfs1 = [&](auto rec, int v)->void{
+			if (vis[v])return; 
+			vis[v] = true;
+			for(int adj : g[v])rec(rec, adj);
 			order.pb(v);
 		};
-		auto dfs2 = [&](auto self, int v, int curcomp){
-			if (visited[v])return;
-			visited[v] = true;
-			component[v] = curcomp; curvs.pb(v);
+		rep(i, 0, n)dfs1(dfs1, i);
+		reverse(all(order)); vis = vi(n, 0);
+		auto dfs2 = [&](auto rec, int v)->void{
+			if (vis[v])return;
+			vis[v] = true; cid[v] = sz(comps)-1;
+			comps.back().pb(v); 
 			for(int adj : gi[v]){
-				if (visited[adj] and component[adj]!=curcomp){
-					int compadj = component[adj];
-					cdg[compadj].pb(curcomp); cdgi[curcomp].pb(compadj);
-				}
-				else self(self, adj, curcomp);
+				if (not vis[adj])rec(rec, adj);
+				else if (cid[adj]!=curid)cdg[cid[adj]].pb(curid);
 			}
 		};
-		rep(i, 0, n)dfs1(dfs1, i);
-		rep(i, 0, n)visited[i] = false;
-		reverse(all(order));
-		rep(i, 0, n){
-			int v = order[i];
-			if (visited[v])continue;
-			cdg.pb(vi()); cdgi.pb(vi());
-			dfs2(dfs2, v, totalcomps); totalcomps++;
-			comps.pb(curvs); curvs.clear();
+		for(int v : order){
+			if (vis[v])continue;
+			cdg.pb(vi()); comps.pb(vi());
+			dfs2(dfs2, v, ++curid);
 		}
 	}
 };
