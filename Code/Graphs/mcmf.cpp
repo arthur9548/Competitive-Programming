@@ -5,173 +5,71 @@
 //dijkstra (O(V*V) for dense graphs and O((V+E)logE) for sparse graphs)
 //Both Dinic MCMF and usual greedy MCMF (similar to Edmonds-Karp) are supported
 
-
-int lg2(int n){ //used solely for adaptative dijkstra
-	return __builtin_popcountll(1ll)-__builtin_popcountll(n);
-}
-
-struct Edge{
-	int a, b, w, c; //w = capacity left, c = cost per unit
-	Edge(int aa, int bb, int ww, int cc){
-		a = aa; b = bb; c = cc; w = ww;
-	}
-};
- 
+template<class TF, class TC>
 struct MCMF{
-	int n, m, rm; //rm = number of unblocked edges
-	vvi g;
-	vector<Edge> edges;
-	vi dists, pots; //current distances and potentials
+	struct Edge{int a, b; TF w; TC c;};
+	int n, m;
+	vector<vi> g; vector<Edge> es;
+	MCMF(int s):n(s),m(0),g(n){}
 	
-	MCMF(int n_){
-		n = n_; m = 0;
-		g.resize(n); dists.resize(n); pots.resize(n);
+	void add_edge(int a, int b, TF w, TC c){
+		g[a].pb(m++); g[b].pb(m++);
+		es.pb({a, b, w, c}); es.pb({b, a, TF(0), -c});
 	}
 	
-	void add_edge(int a, int b, int w, int c){
-		g[a].pb(m); g[b].pb(m+1); m += 2;
-		edges.eb(a, b, w, c); edges.eb(b, a, 0, -c);
-	}
-	
-	int pot_cost(Edge& e){
-		return pots[e.a]-pots[e.b]+e.c; //edge "distance" with potentials
-	}
-	
-	void dists_init(int source){ //SPFA, to be used only if g has any c<0
-		dists.assign(n, oo);
-		vb inqueue(n, false);
-		queue<int> q; q.push(source);
-		inqueue[source] = true; dists[source] = 0;
-		while(not q.empty()){
-			int v = q.front(); q.pop();
-			inqueue[v] = false;
-			for(int eidx : g[v]){
-				auto& e = edges[eidx];
-				if (not e.w)continue;
-				int adj = e.b, d = e.c;
-				if (dists[adj] > dists[v]+d){
-					dists[adj] = dists[v]+d;
-					if (not inqueue[adj]){
-						q.push(adj); inqueue[adj] = true;
-					}
+	pair<TF, TC> mcmf(int source, int sink){
+		TF eps = TF(1)/TF(oo);
+		vector<TC> ds(n,TC(0)), ps(n,TC(0));
+		vi ce(n, 0), on(n, 0);
+		auto ecost = [&](Edge& e)->TC{return ps[e.a]-ps[e.b]+e.c;};
+		auto pots_init = [&]()->void{
+			ps.assign(n, TC(oo)); vi inq(n, 0); 
+			queue<int> q; q.push(source);
+			inq[source] = 1; ps[source] = 0;
+			while(not q.empty()){
+				int v = q.front(); q.pop(); inq[v] = 0;
+				for(int i : g[v]){ auto& e = es[i];
+					if (e.w<=eps or ps[e.b]<=ps[v]+e.c)continue;
+					if (not inq[e.b])q.push(e.b);
+					inq[e.b] = 1; ps[e.b] = ps[v]+e.c;
 				}
-			}
-		}
-	}
-	
-	vi dists_calc(int source){ //Dijkstra with potentials
-		rep(v, 0, n)if (pots[v]<oo)pots[v] += dists[v]; //setting potentials
-		bool sparse = ((n+rm)*lg2(rm)) <= (n*n); //complexity decision
-		//sparse = true; //usually graphs are very sparse
-		dists.assign(n, oo);
-		vb visited(n, false);
-		vi path(n, -1);
-		priority_queue<pii, vector<pii>, greater<pii>> pq;
-		auto get_best = [&]()->int{
-			int best = -1;
-			if (sparse){
-				if (pq.empty())return best;
-				else{ best = pq.top().second; pq.pop(); return best;}
-			}
-			else{
-				rep(v, 0, n){
-					if (visited[v])continue;
-					if (best==-1)best = v;
-					else if (dists[v] < dists[best])best = v;
-				}
-				return best;
 			}
 		};
-		auto process = [&](int v){
-			if (sparse)pq.push({dists[v], v});
-		};
-		dists[source] = 0;
-		int v = source; process(v);
-		while(v != -1){ //algorithm is adapted to current state
-			if (not visited[v]){
-				visited[v] = true;
-				for(int eidx : g[v]){
-					auto& e = edges[eidx];
-					if (not e.w)continue;
-					if (dists[e.b] > dists[v]+pot_cost(e)){
-						dists[e.b] = dists[v]+pot_cost(e);
-						path[e.b] = eidx;
-						process(e.b);
-					}
+		auto dists_calc = [&]()->bool{
+			rep(v, 0, n)if (ps[v]<TC(oo))ps[v]+=ds[v];
+			ds.assign(n, TC(oo)); ce.assign(n, 0);
+			vi vis(n, 0); using P = pair<int, TC>;
+			priority_queue<P, vector<P>, greater<P>> pq;
+			pq.push({ds[source]=TC(0), source});
+			while(not pq.empty()){
+				auto [d, v] = pq.top(); pq.pop();
+				if (vis[v])continue;
+				vis[v] = true;
+				for(int i : g[v]){ auto& e = es[i];
+					if (e.w<=eps or ds[e.b]<=d+ecost(e))continue;
+					pq.push({ds[e.b]=d+ecost(e), e.b});
 				}
 			}
-			v = get_best();
-		}
-		return path;
-	}
- 
-	pii simplemcmf(int source, int sink){
-		rm = m;
-		int flow = 0, cost = 0; 
-		//dists_init(source); //comment if all cs>0, SPFA becomes redundant
-		while(true){
-			vi path = dists_calc(source); //getting a shorstest path
-			if (path[sink]==-1)return {flow, cost};
-			int v = sink, cf=oo, cc=0;
-			while(v != source){ //using it to increase flow
-				auto& e = edges[path[v]];
-				cf = min(cf, e.w);
-				v = e.a;
+			return ds[sink]!=TC(oo);
+		};	
+		auto push_flow = [&](auto rec, int v, TF f)->pair<TF, TC>{
+			if (v==sink)return {f, TC(0)};
+			on[v] = 1; TF curf(0); TC curc(0);
+			for(int& i = ce[v]; i < sz(g[v]); i++){
+				int j = g[v][i]; auto& e = es[j];
+				if (on[e.b] or e.w<=eps)continue;
+				if (ecost(e)>ds[e.b]-ds[e.a])continue;
+				auto [cf, cc] = rec(rec, e.b, min(f, e.w));
+				f-=cf; curf+=cf; e.w-=cf; es[j^1].w+=cf;
+				curc += e.c*cf + cc;
+				if (f<=eps){on[v] = 0; return {curf, curc};}
 			}
-			v = sink;
-			while(v != source){
-				auto& e = edges[path[v]];
-				auto& re = edges[path[v]^1];
-				cc += cf*e.c;
-				e.w -= cf; 
-				if (cf and e.w==0)rm--;
-				if (cf and re.w==0)rm++;
-				re.w += cf;
-				v = e.a;
-			}
-			flow += cf; cost += cc;
-		}
+			on[v] = 0; return {curf, curc};
+		};
+		TF flow(0), cf(oo); TC cost(0), cc(0); 
+		for(pots_init();dists_calc();)
+			for(cf=TF(oo);cf>eps;flow+=cf,cost+=cc)
+				tie(cf, cc)=push_flow(push_flow,source,TF(oo));
 		return {flow, cost};
 	}
-	
-	pii dinicmcmf(int source, int sink){
-		rm = m;
-		int res = 0, cost = 0; 
-		vi cedge(n, 0); vb online(n, false);
-		auto in_spdag = [&](Edge& e)->bool{
-			if (not e.w)return false;
-			return (dists[e.b]-dists[e.a]==pot_cost(e));
-		};
-		auto push_flow = [&](auto self, int v, int flow)->int{//Dinic DFS
-			if (v == sink)return flow;
-			online[v] = true;
-			int pushed = 0;
-			for(int& i = cedge[v]; i < sz(g[v]); i++){
-				int eidx = g[v][i]; auto& e = edges[eidx];
-				if (not in_spdag(e))continue;
-				if (online[e.b])continue; //avoids cycle with 0 cost
-				int f = self(self, e.b, min(flow, e.w));
-				flow -= f; pushed += f;
-				e.w -= f; 
-				if (f and e.w==0)rm--;
-				if (edges[eidx^1].w==0 and f)rm++; 
-				edges[eidx^1].w += f;
-				cost += e.c*f;
-				if (flow==0){
-					online[v] = false; return pushed;
-				}
-			}
-			online[v] = false;
-			return pushed;
-		};
-		
-		//dists_init(source); //comment if all cs>0, SPFA becomes redundant
-		while(true){
-			dists_calc(source); //uses s.p. DAG as Dinic DAG
-			if (dists[sink]==oo)break; //sink is unreachable
-			cedge.assign(n, 0);
-			while(int cf = push_flow(push_flow, source, oo)) res += cf;
-		}
-		return {res, cost};
-	}
-};	
+};
