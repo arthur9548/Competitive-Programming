@@ -1,9 +1,16 @@
-//Min cost max flow: getting max flow in graph with minimum cost, 
-//complexity is difficult to state but is related to F (max flow value),
-//C (max cost unit/edge), V and E
-//Algorithm uses potentials to calculate shortests paths with adaptative
-//dijkstra (O(V*V) for dense graphs and O((V+E)logE) for sparse graphs)
-//Both Dinic MCMF and usual greedy MCMF (similar to Edmonds-Karp) are supported
+//Title: Dinic MinCostMaxFlow
+//Description: minimum cost for maximum flow in network
+//Complexity:
+//--- Preprocessing: SPFA (O(V*E))
+//--- Max number of iterations: min(maxflow, max cost path)
+//--- Complexity for each iteration:
+//    --- Dijkstra: O(V+ElogE)
+//    --- DFS: O(E*V)?
+//Restrictions: both flow type and cost type must be numerical
+//Observations:
+//--- pots_init is only useful if there are negative initial costs
+//--- Dijkstra path recover can be used as (slower?) alternative to push flow
+//Tested at: CSES-Parcel Delivery
 
 template<class TF, class TC>
 struct MCMF{
