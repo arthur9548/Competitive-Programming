@@ -18,3 +18,18 @@ void buildfact(){
 int bino(int n, int k){
 	return (((fact[n]*ifact[k])%MOD)*ifact[n-k])%MOD;
 }
+
+template<typename num> struct Combinatorics{
+	vector<num> fact, ifact;
+	Combinatorics(int mxn){
+		fact.resize(mxn); ifact.resize(mxn);
+		fact[0] = num(1);
+		rep(i, 1, mxn)fact[i] = fact[i-1]*num(i);
+		ifact[mxn-1] = num(1)/fact[mxn-1];
+		repinv(i, mxn-2, 0)ifact[i] = ifact[i+1]*num(i+1);
+	}
+	
+	num choose(int n, int k){
+		return fact[n]*ifact[k]*ifact[n-k];
+	}
+};

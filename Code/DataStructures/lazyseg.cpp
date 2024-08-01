@@ -1,72 +1,72 @@
-//segment tree with lazy propagation
-//about 2x slower than iteractive non-lazy seg
-//customizable operations, but prop should be analyzed separately
+//Title: Lazy Iteractive Segment Tree (Lazy Seg)
+//Description: range update and query
+//Complexity: O(logn) query and update, O(n) memory
+//Restrictions:
+//--- Seg operation must be monoidal (id, op)
+//--- Lazy updates must distribute over operations
+//--- Lazy composition must be compositional (obviously)
+//Observations: 
+//--- 1-indexed and half-open in internal implementation only 
+//--- Default initialization is with id value
+//Tested at: CSES-Prefix Sum Queries
 
-#define type int
-#define neutral 0ll
-//neutral is for query, not lazy update
-
-type merge(type a, type b){
-	return a+b;
-}
-
-int parent(int pos){
-	return pos/2 - (1-pos%2);
-}
-
-struct LazySegTree{
-	int n;
-	vector<type> seg;
-	vector<type> lazy;
-	
-	LazySegTree(vector<type> v){
-		int s = sz(v);
-		if (__builtin_popcount(s)==1)n = s;
-		else n = 1<<(1+__builtin_clz(1)-__builtin_clz(s));
-		seg.assign(2*n-1, neutral);
-		lazy.assign(2*n-1, 0ll);
-		rep(i, 0, s)update(i, i, v[i]-neutral);
+template<class S>
+struct LazySeg{ using T = typename S::T; using L = typename S::L;
+	int ilog(signed x){return __builtin_clz(1)-__builtin_clz(x);}
+	int n, h; 
+	vector<T> seg; 
+	vector<L> lz;
+	vector<bool> ig;
+	LazySeg(int s):n(s),h(1+ilog(n)),seg(2*n,S::id),lz(n),ig(n,1){}
+	void fix(int p, int s){
+		seg[p] = ig[p]?S::op(seg[p<<1],seg[p<<1|1]):S::ch(seg[p],lz[p],s);
 	}
-	
-	void prop(int pos, int lx, int rx){
-		//careful on how lazy is implemented according to operations
-		//strongly connected to how update works
-		if (lazy[pos]==0ll)return;
-		seg[pos] += lazy[pos];
-		if ((rx-lx)>1){
-			lazy[2*pos+1]+=lazy[pos];
-			lazy[2*pos+2]+=lazy[pos];
+	void apply(L v, int p, int s){
+		seg[p] = S::ch(seg[p], v, s);
+		if (p < n)lz[p] = ig[p]?v:S::cmp(lz[p],v), ig[p]=0;
+	}
+	void push(int p){
+		for(int k=h,s=1<<h;k;k--){
+			s>>=1; int i = (p+n)>>k; if (ig[i])continue;
+			apply(lz[i],i<<1,s); apply(lz[i],i<<1|1,s); ig[i]=1;
 		}
-		lazy[pos] = 0ll;
-	}
-	
-	//Interface
-	void update(int l, int r, int value){
-		updt(l,r+1,value,0,0,n);
-	}
-	
-	type query(int l, int r){
-		return qry(l,r+1,0,0,n);
-	}
-	
-	//[l,r[
-	void updt(int l, int r, int value, int pos, int lx, int rx){
-		prop(pos, lx, rx);
-		if (r <= lx or l >= rx)return;
-		if (l <= lx and r >= rx){
-			lazy[pos] += value; prop(pos, lx, rx); return;
+	}	
+	void update(L v, int l, int r){
+		push(l); push(r);
+		int cl=0,cr=0,s=1;
+		for(l+=n,r+=n+1;l<r;l>>=1,r>>=1,s<<=1){
+			if (cl)fix(l-1,s);
+			if (cr)fix(r,s);
+			if (l&1)apply(v,l++,s),cl=1;
+			if (r&1)apply(v,--r,s),cr=1;
 		}
-		int mid = lx+(rx-lx)/2;
-		updt(l,r,value,2*pos+1,lx,mid); updt(l,r,value,2*pos+2,mid,rx);
-		seg[pos] = merge(seg[2*pos+1], seg[2*pos+2]);
+		for(l--;r;l>>=1,r>>=1,s<<=1){
+			if (cl)fix(l,s);
+			if (cr and ((not cl) or (l != r)))fix(r, s);
+		}
 	}
-	
-	//[l,r[
-	type qry(int l, int r, int pos, int lx, int rx){
-		prop(pos,lx,rx);
-		if (r <= lx or l >= rx)return neutral;
-		if (l <= lx and r >= rx)return seg[pos];
-		int mid = lx+(rx-lx)/2;
-		return merge(qry(l,r,2*pos+1,lx,mid), qry(l,r,2*pos+2,mid,rx));
+	T query(int l, int r){
+		push(l); push(r);
+		T vl=S::id,vr=S::id;
+		for(l+=n,r+=n+1;l<r;l>>=1,r>>=1){
+			if (l&1)vl = S::op(vl, seg[l++]);
+			if (r&1)vr = S::op(seg[--r], vr);
+		}
+		return S::op(vl, vr);
 	}
 };
+
+struct Spec{ //max with sum update
+	using T = int;
+	using L = int;
+	static constexpr T id = -oo; //everyone will start with this value
+	static T op(T a, T b){return max(a, b);}
+	static T ch(T past, L upd, int s){return past+upd;} //ch(op(a,b),x)=op(ch(a,x),ch(b,x))
+	static L cmp(L cur, L upd){return cur+upd;} //ch(a,cmp(x,y))=ch(ch(a,x),y)
+};
+
+void example(){
+	LazySeg seg(3); //seg = {-oo, -oo, -oo}
+	seg.update(oo+1, 0, 2); //seg = {1, 1, 1}
+	seg.update(1, 2, 2); //seg = {1, 1, 2}
+	cout << seg.query(0, 2) << endl; // = 2
