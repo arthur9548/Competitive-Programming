@@ -1,20 +1,14 @@
-int trie[MXN][26];
-int freq[MXN];
-int cn=1;
-
-int nxt(char proxc, int curno){
-	if (trie[curno][proxc-'a'])return trie[curno][proxc-'a'];
-	return trie[curno][proxc-'a'] = cn++;
-}	
- 
-void insert(string& s){
-	int no=0;
-	for(char c : s)no = nxt(c, no);
-	freq[no]++;
-}
-
-int count(string& s){
-	int no = 0;
-	rep(i, 0, s.size())no = nxt(c, no);
-	return freq[no];
-}
+template<class T>
+struct Trie{
+	vector<hash_map<T, int>> g; vi cnt;
+	Trie():g(1),cnt(1,0){}
+	int new_node(){g.pb(hash_map<T, int>()); cnt.pb(0); return sz(g)-1;}
+	template<class S> void insert(const S & s){
+		int cur = 0;
+		for(T c : s){
+			if (g[cur].count(c))cur = g[cur][c];
+			else cur = g[cur][c] = new_node();
+		}
+		cnt[cur]++;
+	}
+};
