@@ -12,7 +12,7 @@ struct Kosaraju{
 	vector<vi> cdg, comps;
 	
 	Kosaraju(vector<vi>& g):n(sz(g)), cid(n, -1){
-		vector<vi> gi; rep(i, 0, n)for(int j : g[i])gi[j].pb(i);
+		vector<vi> gi(n); rep(i, 0, n)for(int j : g[i])gi[j].pb(i);
 		vi vis(n, 0), order;
 		auto dfs1 = [&](auto rec, int v)->void{
 			if (vis[v])return; 
@@ -28,13 +28,13 @@ struct Kosaraju{
 			comps.back().pb(v); 
 			for(int adj : gi[v]){
 				if (not vis[adj])rec(rec, adj);
-				else if (cid[adj]!=curid)cdg[cid[adj]].pb(curid);
+				else if (cid[adj]!=cid[v])cdg[cid[adj]].pb(cid[v]);
 			}
 		};
 		for(int v : order){
 			if (vis[v])continue;
 			cdg.pb(vi()); comps.pb(vi());
-			dfs2(dfs2, v, ++curid);
+			dfs2(dfs2, v);
 		}
 	}
 };
