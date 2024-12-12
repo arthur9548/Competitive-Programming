@@ -6,12 +6,13 @@
 		- Build: O(n^D)
 		- Memory: O(n^D * T)
 	* Restrictions:
-		- S must be a group (T, id, op, inv)
+		- S must be an abelian group (T, id, op, inv)
 	* Observations:
 		- 1-indexed and half-open only in internal implementation
 		- Don't forget to "init" the Psum before querying!
 	* Tested at:
 		- Static Range Sum Queries (CSES)
+		- Forest Queries (CSES)
 		- Counting Rectangles is Fun (CF)
 */
 

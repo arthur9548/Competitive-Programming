@@ -13,6 +13,7 @@
 		- Good constant factor
 	* Tested at:
 		- Dynamic Range Sum Queries (CSES)
+		- Forest Queries II (CSES)
 		- UFOs (Timus)
 	* Based on: https://codeforces.com/blog/entry/64914
 */
