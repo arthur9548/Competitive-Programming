@@ -1,10 +1,17 @@
-//Title: Hash Map
-//Description: safe and efficient hash map based on unordered_map
-//Complexity: O(1) operations on average
-//Restrictions: elements must be convertible to long long
-//Observations:
-//--- If not using long long keys, create hash function from object to long long
-//Tested at: -
+/**
+	* Title: Safe Hash Map
+	* Description: safe and efficient hash map based on unordered_map
+	* Complexity:
+		- Access and operations: O(~1) (log(n) on average?)
+		- Memory: O(n)
+	* Restrictions:
+		- Keys must be convertible to uint64_t
+	* Observations:
+		- Use .reserve(MXN) to improve constant factor
+		- Bad constant factor in memory and time
+	* Tested at:
+		- Word Combinations (CSES)
+*/
 
 struct custom_hash{
 	using T = uint64_t;
@@ -21,15 +28,3 @@ struct custom_hash{
 };
 template<class A, class B>
 using hash_map = unordered_map<A, B, custom_hash>;
-  
-void example(){
-	hash_map<int, char> m;
-	m[1] = 'a';
-	m[2] = 'b';
-	m[1] = 'c';
-	m[-1] = 'a';
-	cout << m.count(-1) << endl; // 1
-	for(auto [a, b] : m){ //not in order
-		cout << a << esp << b << endl;
-	}
-}
