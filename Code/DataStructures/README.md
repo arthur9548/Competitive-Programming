@@ -1,5 +1,5 @@
 ## About my Data Structures
-This section contains implementations of general use and range query data structures.
+This section contains implementations of general use and range query data structures. All of them require the inclusion of my competitive programming template.
 
 The code is my implementation, but the main idea of the design or optimization may not be mine. I have added a "Based on" field in my files to acknowledge the original resource where I found the idea (when possible).
 
