@@ -1,23 +1,29 @@
-//Title: multidimensional Sparse Table
-//Description: static idempotent range queries
-//Complexity: O((nlogn)^D) build and memory, O(1) query
-//Restrictions: elements must be of an Idempotent (and commutative) Monoid (^, id)
-//Observations:
-//--- Query has a constant factor of 2^D
-//--- Don't forget to "init" the Sparse Table before querying!
-//Tested at: CSES-Static Range Mininum Queries and CF-Animals and Puzzle
+/**
+	* Title: Multidimensional Sparse Table
+	* Description: static idempotent range queries
+	* Complexity:
+		- Query: O(op * 2^D)
+		- Build: O(op * (n * log(n))^D)
+		- Memory: O((n * log(n))^D)
+	* Restrictions:
+		- S must be an idempotent monoid (T, id, op)
+	* Observations:
+		- Don't forget to "init" the Sparse Table before querying!
+	* Tested at:
+		- Static Range Minimum Queries (CSES)
+		- Animals and Puzzles (CF)
+*/
 
 #define MAs template<class...As> //multiple arguments
 template<int D, class S>
-struct SpTable{ using T = typename S::T;
-	using isp = SpTable<D-1, S>;
-	inline int lg(signed x){return __builtin_clz(1)-__builtin_clz(x);}
-	int n;
-	vector<vector<isp>> tab;
+struct MSpTable{ using T = typename S::T;
+	using isp = MSpTable<D-1, S>;
+	int lg(signed x){return __builtin_clz(1)-__builtin_clz(x);}
+	int n; vector<vector<isp>> tab;
 	MAs SpTable(int s, As... ds):n(s),
 	tab(1+lg(n),vector<isp>(n,isp(ds...))){}
 	MAs void set(T x, int p, As... ps){tab[0][p].set(x, ps...);}
-	void join(SpTable& a, SpTable& b){
+	void join(MSpTable& a, MSpTable& b){
 		rep(i, 0, 1+lg(n))rep(j, 0, n)
 			tab[i][j].join(a.tab[i][j], b.tab[i][j]);
 	}
@@ -33,23 +39,16 @@ struct SpTable{ using T = typename S::T;
 };
 
 template<class S>
-struct SpTable<0, S>{ using T = typename S::T;
+struct MSpTable<0, S>{ using T = typename S::T; //base case
 	T val=S::id;
 	void set(T x){val=x;}
-	void join(SpTable& a, SpTable& b){val=S::op(a.val,b.val);}
+	void join(MSpTable& a, MSpTable& b){val=S::op(a.val,b.val);}
 	void init(){}
 	T query(){return val;}
 };
 
-struct IM{
+struct MinimumMonoid{
 	using T = int;
 	static constexpr T id = oo;
 	static T op(T a, T b){return min(a, b);}
 };
-
-void example(){
-	SpTable<3, IM> sp(4, 5, 3); //4x5x3 3D sparse table
-	sp.set(1, 0, 2, 1); //point (0,2,1) has now value 1
-	sp.init();
-	cout << sp.query(0, 3, 0, 4, 0, 2) << endl; // = "1", because of id value
-}
