@@ -13,6 +13,7 @@
 		- Very good constant factor
 	* Tested at:
 		- Dynamic Range Sum Queries (CSES)
+	* Based on: https://codeforces.com/blog/entry/63064
 */
 		
 template<class S>

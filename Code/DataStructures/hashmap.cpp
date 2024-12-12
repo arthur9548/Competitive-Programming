@@ -11,6 +11,7 @@
 		- Bad constant factor in memory and time
 	* Tested at:
 		- Word Combinations (CSES)
+	* Based on: https://codeforces.com/blog/entry/62393
 */
 
 struct custom_hash{

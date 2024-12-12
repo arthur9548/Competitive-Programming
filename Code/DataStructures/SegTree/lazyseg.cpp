@@ -19,6 +19,7 @@
 	* Tested at:
 		- Range Updates and Sums (CSES)
 		- Polynomial Queries (CSES)
+	* Based on: https://codeforces.com/blog/entry/18051
 */
 		
 #define V vector

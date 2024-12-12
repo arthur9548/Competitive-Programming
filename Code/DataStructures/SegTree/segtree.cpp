@@ -12,6 +12,7 @@
 		- 1-indexed and half-open only in internal implementation
 	* Tested at:
 		- Dynamic Range Minimum Queries (CSES)
+	* Based on: https://codeforces.com/blog/entry/18051
 */
 		
 template<class S>
