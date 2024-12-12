@@ -1,6 +1,8 @@
 ## About my Data Structures
 This section contains implementations of general use and range query data structures.
 
+The code is my implementation, but the main idea of the design or optimization may not be mine. I have added a "Based on" field in my files to acknowledge the original resource where I found the idea (when possible).
+
 I usually implement RQDS (Range Query Data Structures) as something similar to:
 ```c++
 template<class S>
