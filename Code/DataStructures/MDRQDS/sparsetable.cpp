@@ -20,7 +20,7 @@ struct MSpTable{ using T = typename S::T;
 	using isp = MSpTable<D-1, S>;
 	int lg(signed x){return __builtin_clz(1)-__builtin_clz(x);}
 	int n; vector<vector<isp>> tab;
-	MAs SpTable(int s, As... ds):n(s),
+	MAs MSpTable(int s, As... ds):n(s),
 	tab(1+lg(n),vector<isp>(n,isp(ds...))){}
 	MAs void set(T x, int p, As... ps){tab[0][p].set(x, ps...);}
 	void join(MSpTable& a, MSpTable& b){
