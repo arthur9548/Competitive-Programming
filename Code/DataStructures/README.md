@@ -19,7 +19,11 @@ struct AlgebraicStructure{
   static T op(T a, T b){return operation(a, b);}
 };
 
-DataStructure<AlgebraicStructure> ds(my_vector);
+void usage(){
+  DataStructure<AlgebraicStructure> ds(my_vector);
+  ds.update(new_value, position); //0-indexed
+  cout << ds.query(left_pos, right_pos) << endl; //inclusive-inclusive ([l, r])
+}
 ```
 
 I chose to separate my implementations of Segment Trees and MDRQDS (Multidimensional Range Query Data Structures) in separate folders for better organization.
