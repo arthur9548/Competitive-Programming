@@ -26,4 +26,11 @@ void usage(){
 }
 ```
 
-I chose to separate my implementations of Segment Trees and MDRQDS (Multidimensional Range Query Data Structures) in separate folders for better organization.
+If the identity of operation absolutely cannot be made constexpr, you can fix it like this:
+```c++
+AlgebraicStructure::T AlgebraicStructure::id;
+int main(){ AlgebraicStructure::id = value;
+...
+```
+
+I chose to put my implementations of Segment Trees and MDRQDS (Multidimensional Range Query Data Structures) in separate folders for better organization.
