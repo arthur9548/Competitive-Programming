@@ -2,10 +2,10 @@
 	* Title: Multidimensional Binary Indexed Tree (BIT)
 	* Description: fast range query and point update
 	* Complexity:
-		- Query: O(query)
-		- Add (update): O(add)
-		- Build: O(n)
-		- Memory: O(memo)
+		- Query: O(op * (2 * log(n))^D + inv * (2 * log(n))^(D-1))
+		- Add (update): O(log(n)^D * op)
+		- Build: O(n^D)
+		- Memory: O(n^D * T)
 	* Restrictions:
 		- S must be an abelian group (T, id, op, inv)
 	* Observations:

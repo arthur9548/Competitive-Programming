@@ -3,7 +3,7 @@
 	* Description: static range queries
 	* Complexity:
 		- Query: O((op + inv) * 2^D)
-		- Build: O(n^D)
+		- Build: O(D * op * n^D)
 		- Memory: O(n^D * T)
 	* Restrictions:
 		- S must be an abelian group (T, id, op, inv)
