@@ -6,7 +6,7 @@
 		- Build: O(op * (n * log(n))^D)
 		- Memory: O((n * log(n))^D)
 	* Restrictions:
-		- S must be an idempotent monoid (T, id, op)
+		- S must be an commutative idempotent monoid (T, id, op)
 	* Observations:
 		- Don't forget to "init" the Sparse Table before querying!
 	* Tested at:

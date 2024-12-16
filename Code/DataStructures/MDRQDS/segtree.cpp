@@ -7,7 +7,7 @@
 		- Build: O((2 * n)^D)
 		- Memory: O((2 * n)^D * T)
 	* Restrictions:
-		- S must be a monoid (T, id, op)
+		- S must be a commutative monoid (T, id, op)
 	* Observations:
 		- 1-indexed and half-open only in internal implementation
 	* Tested at:
