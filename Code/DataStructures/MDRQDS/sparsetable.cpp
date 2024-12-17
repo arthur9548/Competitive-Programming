@@ -4,9 +4,9 @@
 	* Complexity:
 		- Query: O(op * 2^D)
 		- Build: O(op * (n * log(n))^D)
-		- Memory: O((n * log(n))^D)
+		- Memory: O((n * log(n))^D * T)
 	* Restrictions:
-		- S must be an commutative idempotent monoid (T, id, op)
+		- S must be a commutative idempotent monoid (T, id, op)
 	* Observations:
 		- Don't forget to "init" the Sparse Table before querying!
 	* Tested at:
