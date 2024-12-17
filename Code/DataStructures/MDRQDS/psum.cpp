@@ -1,5 +1,5 @@
 /**
-	* Title: Multidimensional Prefix/Partial/Cummulative Sum
+	* Title: Multidimensional Prefix/Partial/Cumulative Sum
 	* Description: static range queries
 	* Complexity:
 		- Query: O((op + inv) * 2^D)
