@@ -3,8 +3,8 @@
 	* Description: static range queries
 	* Complexity:
 		- Query: O(op * 2^D)
-		- Build: O(op * (n * log(n))^D)
-		- Memory: O((n * log(n))^D * T)
+		- Build: O(op * (2 * n * log(n))^D)
+		- Memory: O((2 * n * log(n))^D * T)
 	* Restrictions:
 		- S must be a commutative monoid (T, id, op)
 	* Observations:
