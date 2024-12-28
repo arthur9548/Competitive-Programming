@@ -26,7 +26,7 @@ void usage(){
 }
 ```
 
-If the identity of operation absolutely cannot be made constexpr, you can fix it like this:
+If the identity of operation absolutely cannot be made constexpr, you can remove that specifier and fix it like this:
 ```c++
 AlgebraicStructure::T AlgebraicStructure::id;
 int main(){ AlgebraicStructure::id = value;

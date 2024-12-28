@@ -1,6 +1,6 @@
 ## About my MDRQDS
 This folder contains my implementation of Multidimensional Range Query Data Structures (MDRQDS). Please read the information regarding my 
-[Data Structures code](https://github.com/arthur9548/Competitive-Programming/blob/main/Code/DataStructures/README.md) to understand how to use my code.
+[Data Structures code](https://github.com/arthur9548/Competitive-Programming/blob/main/Code/DataStructures/README.md) to understand how to use it.
 
 [This blog](https://codeforces.com/blog/entry/64914) inspired me to think about multidimensionality in a broader way. 
 I'm currently working on my own blog to explain the concepts and implementation details of MDRQDS.
