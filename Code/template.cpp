@@ -49,15 +49,6 @@ template<class T> struct ordered_multiset{
 #define repinv(i, a, b) for(int i = (a); i >= (b); i--)
 #define for_each(x, c) for(auto x : c)
 
-//debug:
-#ifdef LOCAL
-#define debug(var) cout << #var << ": " << (var) << endl
-#define debug_mul(stuff...) debug((vector{stuff}))
-#else
-#define debug(var)
-#define debug_mul(stuf...)
-#endif
-
 //io:
 #define esp " "
 #ifndef INTERACTIVE
@@ -71,6 +62,13 @@ rep(i,0,sz(v)){o << v[i]; if (i<sz(v)-1)o << esp;} return o;}
 template<class A, class B> auto& operator<<(ostream& o, pair<A, B> p){o << p.fst << esp << p.snd; return o;}
 template<class T> auto& operator>>(istream& i, vector<T>& v){for_each(&x, v)i >> x; return i;}
 template<class A, class B> auto& operator>>(istream& i, pair<A, B>& p){ i>> p.fst >> p.snd; return i;}
+
+//debug:
+#ifdef LOCAL
+#define debug(x...) cout<<"["#x"]: ",[](auto...$){((cout<<$<<"; "),...);}(x),cout<<endl
+#else
+#define debug(...) {}
+#endif
 
 //using and typedef:
 typedef vector<int> vi;
