@@ -70,21 +70,21 @@ struct LazySeg{ UT(S, T); UT(S, L);
 	}
 };
 
-struct SetAddSum{
-	using T = int;
-	using L = pii; //{0, x} = add x; {1, x} = set x
-	static constexpr T id = 0;
-	static T op(T a, T b){return a + b;}
+struct Sum_of_AP{ //E = sum of
+	using T = pii; //{E cof0, E cof1}
+	using L = pii; //{cof0, cof1}
+	static constexpr T id = {0,0};
+	static T op(T a, T b){return {a.first+b.first, a.second+b.second};}
 	static T ch(T past, L upd, int lx, int rx){
 		int s = rx-lx+1;
-		auto [t, x] = upd;
-		if (t)return s*x;
-		else return past+s*x;
+		past.first += s*upd.first;
+		past.second += ((lx+rx)*(s)/2)*upd.second;
+		return past;
 	}
 	static L cmp(L cur, L upd){
-		auto [t1, x1] = cur;
-		auto [t2, x2] = upd;
-		if (t2)return upd;
-		else return {t1, x1+x2};
+		auto [b, a] = cur;
+		auto [d, c] = upd;
+		return {d+b, c+a};
 	}
+	int ans(T x){return x.first+x.second;}
 };
