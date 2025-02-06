@@ -2,8 +2,8 @@
 	* Title: Lazy Sparse/Implicit/Dynamic Segment Tree
 	* Description: sparse range query and range update
 	* Complexity:
-		- Query: O(log(n) * op)
-		- Update: O(log(n) * op)
+		- Query: O(log(n) * (op + ch + cmp))
+		- Update: O(log(n) * (op + ch + cmp))
 		- Build: O(1)
 		- Memory: O(2 * qnt_queries * log(n) * (2 * int + T + L + bool))
 	* Restrictions:
