@@ -4,7 +4,7 @@
 	* Complexity:
 		- Memory: O(q)
 		- Time: O(sort(q))
-		- Template: O((add + del) * (n * sqrt(q) + q * sqrt(n)) + q * calc)
+		- Template: O((add + del) * (n * sqrt(q)) + q * calc)
 	* Observations:
 		- Queries can be [l1, r1], [l1, l2] or [r1, r2]
 		- Change template according to query and problem types
