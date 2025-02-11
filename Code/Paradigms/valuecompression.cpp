@@ -2,7 +2,7 @@
 	* Title: Value/Coordinate/Index compression
 	* Description: compression of values in vector to the range [0, n)
 	* Complexity: 
-		- Time: O(sort)
+		- Time: O(sort(n))
 		- Memory: O(n)
 	* Restrictions:
 		- T must be assignable to int in in_place version
