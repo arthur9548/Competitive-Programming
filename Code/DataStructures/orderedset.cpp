@@ -8,8 +8,9 @@
 		- Elements must be comparable (< operator)
 	* Observations:
 		- Requires extc++.h (usually doesn't run on Windows)
+		- Use .swap instead of std::swap
 		- Very bad constant factor in time and memory
-		- Erases single element by erase call
+		- Multiset erases single element by erase call
 		- Method find_by_order finds element as in sorted vector with duplicates
 	* Tested at:
 		- Salary Queries (CSES)
