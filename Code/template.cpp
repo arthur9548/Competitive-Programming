@@ -30,7 +30,7 @@ template<class T> struct ordered_multiset{
 
 //basic types:
 //#define int long long
-#define long long long
+#define ll long long
 #define float long double
 
 //methods:
@@ -75,7 +75,7 @@ typedef vector<int> vi;
 typedef pair<int, int> pii;
 
 //constants:
-using INF_TYPE = int;
+#define INF_TYPE int
 constexpr INF_TYPE oo = (((unsigned INF_TYPE)-1)>>2);
 constexpr int MOD = 998244353;
 
