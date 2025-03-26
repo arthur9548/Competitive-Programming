@@ -4,10 +4,11 @@
 	* Complexity:
 		- Memory: O(q)
 		- Time: O(sort(q))
-		- Template: O((add + del) * (n * sqrt(q)) + q * calc)
+		- Usual template: O((add + del) * (n * sqrt(q)) + q * calc)
+		- No deletion: O(add * (n * sqrt(q)) + q * (calc + checkpoint))
 	* Observations:
 		- Queries can be [l1, r1], [l1, l2] or [r1, r2]
-		- Change template according to query and problem types
+		- Change templates according to query and problem types
 	* Tested at:
 		- Distinct Value Queries (CSES)
 */
@@ -21,7 +22,8 @@ vi mo_order(vector<pii>& qs){
 	sort(all(order), [&](int i, int j){return cmp(qs[i]) < cmp(qs[j]);});
 	return order;
 }
-/*
+
+/* Usual Mo template
 vector mo_template(vector<pii>& qs){
 	vi o = mo_order(qs);
 	int l = 0, r = -1; //empty range for [l, r] queries
@@ -36,5 +38,39 @@ vector mo_template(vector<pii>& qs){
 		ans[i] = calc();
 	}
 	return ans;
+}
+*/
+
+pair<int, vector<vi>> mo_without_deletion(vector<pii>& qs){ //returns block size and queries by block
+	int q = sz(qs), n = 0;
+	for(auto [l, r] : qs)n = max(n, max(l, r));
+	int sq = (int)sqrt(q)+1, blk = (n+sq+1)/sq;
+	vector<vi> order((n+blk-1)/blk);
+	rep(i,0,q)order[qs[i].first/blk].pb(i);
+	for(auto& vq : order)sort(all(vq), [&](int i, int j){return qs[i].second < qs[j].second;});
+	return {blk, order};
+}
+
+/* Mo without deletion
+vector mo_template(vector<pii>& qs){
+	auto [blk, o] = mo_order(qs);
+	rep(i,0,sz(o)){
+		auto& vq = o[i];
+		int l = blk*i + blk, r = l-1; //we will assume the query will extrapolate the block
+		prepare_to_answer_queries();
+		for(int qi : vq){
+			auto [ql, qr] = qs[qi];
+			if (qr <= l){ //if it does not extrapolate
+				rep(j,ql,qr+1)add(j, 1); //solving manually
+				continue;
+			}
+			while(r < qr)add(++r, 1);
+			int ml = l; //we will move l manually
+			prepare_checkpoint();
+			while(ml > ql)add(--ml, 0);
+			ans[qi] = calc();
+			revert_checkpoint(); //discard changes made by moving l
+		}
+	}
 }
 */
