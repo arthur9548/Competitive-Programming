@@ -11,6 +11,7 @@
 		- Change templates according to query and problem types
 	* Tested at:
 		- Distinct Value Queries (CSES)
+		- Simultaneous Kagamimochi 2 (AC)
 */
 
 vi mo_order(vector<pii>& qs){
